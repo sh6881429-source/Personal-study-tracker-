@@ -1,0 +1,75 @@
+name: prep_tracker
+description: "PrepTracker By Yash — All-in-one personal productivity app for study and gym tracking."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.12.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # ── State Management ──
+  flutter_riverpod: ^2.6.1
+  riverpod_annotation: ^2.6.1
+
+  # ── Navigation ──
+  go_router: ^14.8.1
+
+  # ── Backend ──
+  supabase_flutter: ^2.9.0
+
+  # ── Authentication ──
+  google_sign_in: ^6.3.0
+
+  # ── AI ──
+
+  # ── Configuration ──
+  flutter_dotenv: ^5.2.1
+  shared_preferences: ^2.5.3
+  http: ^1.2.2
+
+  # ── Typography ──
+  google_fonts: ^6.2.1
+
+  # ── Charts ──
+  fl_chart: ^0.71.0
+
+  # ── File Handling ──
+  file_picker: ^8.1.7
+  path_provider: ^2.1.5
+  url_launcher: ^6.3.1
+  syncfusion_flutter_pdfviewer: any
+  syncfusion_flutter_pdf: any
+  share_plus: any
+  pdf: ^3.11.3
+  printing: ^5.13.5
+
+  # ── UI Utilities ──
+  cached_network_image: ^3.4.1
+  shimmer: ^3.0.0
+  image_picker: ^1.1.2
+
+  # ── Data ──
+  json_annotation: ^4.9.0
+  freezed_annotation: ^2.4.4
+  uuid: ^4.5.1
+  intl: ^0.20.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  build_runner: ^2.4.14
+  json_serializable: ^6.9.4
+  freezed: ^2.5.8
+  riverpod_generator: ^2.6.3
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - .env
+    - assets/images/
+    - assets/icons/
