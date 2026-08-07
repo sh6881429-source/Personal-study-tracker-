@@ -1,7 +1,7 @@
 import 'dart:async';
-// ignore: avoid_web_libraries_in_flutter
-import 'dart:html' as html;
 import 'package:flutter/foundation.dart';
+import 'platform/notification_platform_io.dart'
+    if (dart.library.html) 'platform/notification_platform_web.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -17,32 +17,12 @@ class NotificationService {
   static final Map<String, Timer> _activeTimers = {};
 
   /// Request notification permission on Web and native platforms
-  static Future<bool> requestPermission() async {
-    if (kIsWeb) {
-      try {
-        final permission = await html.Notification.requestPermission();
-        debugPrint('Web Notification permission result: $permission');
-        return permission == 'granted';
-      } catch (e) {
-        debugPrint('Failed to request web notification permission: $e');
-        return false;
-      }
-    }
-    // On Android/iOS: permissions are requested via platform channel or manifest
-    return true;
+ static Future<bool> requestPermission() async {
+    return await requestPlatformPermission();
   }
 
   /// Checks if web notification permission is granted
-  static bool get isPermissionGranted {
-    if (kIsWeb) {
-      try {
-        return html.Notification.permission == 'granted';
-      } catch (_) {
-        return false;
-      }
-    }
-    return true;
-  }
+  static bool get isPermissionGranted => isPlatformPermissionGranted;
 
   /// Immediately dispatches a notification across Web, Native, and In-App
   static void showNotification({
@@ -59,24 +39,11 @@ class NotificationService {
     debugPrint('🔔 [NOTIFICATION DISPATCH] $title — $message ($displayTime) -> Route: $targetRoute');
 
     // 1. Web Native HTML5 Browser Notification
-    if (kIsWeb) {
-      try {
-        if (html.Notification.permission == 'granted') {
-          final notification = html.Notification(
-            title,
-            body: '$message\nScheduled for $displayTime • Tap to view',
-            icon: '/favicon.png',
-          );
-
-          notification.onClick.listen((_) {
-            notification.close();
-            navigateTargetRoute(targetRoute);
-          });
-        }
-      } catch (e) {
-        debugPrint('Failed to show HTML5 notification: $e');
-      }
-    }
+    // 1. Platform Notification (Web HTML5 or Android/iOS native)
+    showPlatformNotification(
+      title: title,
+      body: '$message\nScheduled for $displayTime • Tap to view',
+    );
 
     // 2. In-App Foreground Banner Overlay
     _showInAppNotificationBanner(
