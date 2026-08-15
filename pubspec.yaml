@@ -9,7 +9,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
+  flutter_local_notifications: ^17.2.3
   # ── State Management ──
   flutter_riverpod: ^2.6.1
   riverpod_annotation: ^2.6.1
@@ -37,7 +37,7 @@ dependencies:
   fl_chart: ^0.71.0
 
   # ── File Handling ──
-  file_picker: ^8.1.7
+  file_picker: ^10.3.7
   path_provider: ^2.1.5
   url_launcher: ^6.3.1
   syncfusion_flutter_pdfviewer: any

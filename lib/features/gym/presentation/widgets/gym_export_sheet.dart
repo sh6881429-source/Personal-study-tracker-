@@ -1,12 +1,8 @@
-import 'dart:io' show File;
-import 'dart:convert' show base64Encode;
-import 'dart:js' as js;
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:share_plus/share_plus.dart';
-import 'package:path_provider/path_provider.dart' show getTemporaryDirectory;
+import 'pdf_download/pdf_download_io.dart'
+    if (dart.library.html) 'pdf_download/pdf_download_web.dart';
 import 'package:prep_tracker/core/constants/app_colors.dart';
 import 'package:prep_tracker/core/constants/app_text_styles.dart';
 import 'package:prep_tracker/features/auth/presentation/providers/auth_provider.dart';
@@ -278,7 +274,7 @@ class _GymExportSheetState extends ConsumerState<GymExportSheet> {
 
     try {
       final repository = ref.read(gymAttendanceRepositoryProvider);
-      
+
       // Fetch all attendance logs
       final allLogs = await repository.getAllAttendance(userId);
       final rangeLogs = allLogs.where((log) =>
@@ -307,27 +303,11 @@ class _GymExportSheetState extends ConsumerState<GymExportSheet> {
         attendancePercentage: stats.monthlyAttendancePercentage,
       );
 
-      if (kIsWeb) {
-        final base64Pdf = base64Encode(pdfBytes);
-        js.context.callMethod('eval', [
-          '''
-          var link = document.createElement('a');
-          link.href = 'data:application/pdf;base64,$base64Pdf';
-          link.download = 'gym_attendance_report.pdf';
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          '''
-        ]);
-      } else {
-        final output = await getTemporaryDirectory();
-        final file = File("${output.path}/gym_report_${DateTime.now().millisecondsSinceEpoch}.pdf");
-        await file.writeAsBytes(pdfBytes);
-        await Share.shareXFiles(
-          [XFile(file.path)],
-          text: 'PrepTracker Gym Attendance Report (${DateFormat('yyyy-MM-dd').format(start)} to ${DateFormat('yyyy-MM-dd').format(end)})',
-        );
-      }
+      await downloadOrSharePdf(
+        pdfBytes,
+        'gym_attendance_report.pdf',
+        'PrepTracker Gym Attendance Report (${DateFormat('yyyy-MM-dd').format(start)} to ${DateFormat('yyyy-MM-dd').format(end)})',
+      );
 
       if (mounted) {
         Navigator.pop(context);

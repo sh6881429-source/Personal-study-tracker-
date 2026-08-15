@@ -13,9 +13,10 @@ Future<void> _ensureInitialized() async {
 
 Future<bool> requestPlatformPermission() async {
   await _ensureInitialized();
-  final androidImpl = _plugin.resolvePlatformSpecificImplementation
-      AndroidFlutterLocalNotificationsPlugin>();
-  final granted = await androidImpl?.requestNotificationsPermission();
+  final AndroidFlutterLocalNotificationsPlugin? androidImpl =
+      _plugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
+  if (androidImpl == null) return true;
+  final bool? granted = await androidImpl.requestNotificationsPermission();
   return granted ?? true;
 }
 
@@ -40,4 +41,3 @@ Future<void> showPlatformNotification({
     details,
   );
 }
-
